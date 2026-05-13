@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('rentals', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('item_id')->constrained();
+            $table->foreignId('renter_id')->constrained('users');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->decimal('total_price', 8, 2);
+            $table->enum('status', ['active', 'returned', 'cancelled']);
             $table->timestamps();
         });
     }
