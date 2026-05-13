@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\Category;
 use App\Models\Rental;
 use App\Models\Review;
 
 class Item extends Model
 {
+    use HasFactory;
+    
     protected $fillable = [
         'owner_id',
         'category_id',
