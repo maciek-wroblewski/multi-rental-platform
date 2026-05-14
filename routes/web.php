@@ -4,8 +4,6 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RentalController;
-use App\Models\Rental;
-use App\Models\Item;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,9 +24,23 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->get('/my-items', function () {
-    return Auth::user()->items()->with('category')->get();
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+
+    return $user()->items()->with('category')->get();
 });
 
 Route::middleware('auth')->post('/rentals', [RentalController::class, 'store']);
+
+Route::middleware('auth')->get('/my-rentals', function () {
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+
+    return $user->rentals()->where('status', 'active')->with('item')->get();
+});
+
+Route::middleware('auth')->patch('/rentals/{rental}/return', [RentalController::class, 'returnRental']);
+
+Route::middleware('auth')->patch('/rentals/{rental}/cancel', [RentalController::class, 'cancelRental']);
 
 require __DIR__.'/auth.php';

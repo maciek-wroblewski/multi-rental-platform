@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Rental;
+use App\Models\Item;
 
 class RentalController extends Controller
 {
@@ -16,7 +17,15 @@ class RentalController extends Controller
             'end_date' => 'required|date|after:start_date',
         ]);
 
-        $overlappingRental = Rental::where('item_id', $request->item_id)
+        $item = Item::findORFail($request->item_id);
+
+        if ($item->owner_id == Auth::id()) {
+            return response()->json([
+                'message' => 'You cannot rent your own item.'
+            ], 403);
+        }
+
+        $overlappingRental = Rental::where('item_id', $request->item_id)->where('status', 'active')
             ->where(function ($query) use ($request) {
 
             $query->whereBetween('start_date', [
@@ -51,5 +60,45 @@ class RentalController extends Controller
         ]);
 
         return $rental;
+    }
+
+    public function returnRetnal(Rental $rental)
+    {
+        if ($rental->renter_id !== Auth::id()) {
+            return response()->json([
+                'message' => 'Unauthorized.'
+            ], 403);
+        }
+
+        $rental->status = 'returned';
+
+        $rental->save();
+
+        return response()->json([
+            'message' => 'Rental returned succesfully.'
+        ]);
+    }
+
+    public function cancelRental(Rental $rental)
+    {
+        if($rental->renter_id !== Auth::id()) {
+            return response()->json([
+                'message' => 'Unauthorized.'
+            ], 403);
+        }
+
+        if($rental->status !== 'active') {
+            return response()->json([
+                'message' => 'Only rentals that are active can be cancelled.'
+            ], 400);
+        }
+
+        $rental->status = 'cancelled';
+
+        $rental->save();
+
+        return response()->json([
+            'message' => 'Rental cancelled successfully.'
+        ]);
     }
 }
