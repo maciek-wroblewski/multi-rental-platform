@@ -14,7 +14,23 @@ Route::get('/me', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+
+    $itemsCount = $user->items()->count();
+
+    $activeRentals = $user->rentals()->where('status', 'active')->count();
+
+    $returnedRentals = $user->rentals()->where('status', 'returned')->count();
+
+    $cancelledRentals = $user->rentals()->where('status', 'cancelled')->count();
+
+    return view('dashboard', compact(
+        'itemsCount',
+        'activeRentals',
+        'returnedRentals',
+        'cancelledRentals'
+    ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
