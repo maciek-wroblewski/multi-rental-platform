@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RentalController;
+use App\Http\Controllers\ItemController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -58,5 +59,7 @@ Route::middleware('auth')->get('/my-rentals', function () {
 Route::middleware('auth')->patch('/rentals/{rental}/return', [RentalController::class, 'returnRental']);
 
 Route::middleware('auth')->patch('/rentals/{rental}/cancel', [RentalController::class, 'cancelRental']);
+
+Route::resource('items', ItemController::class);
 
 require __DIR__.'/auth.php';

@@ -3,29 +3,31 @@
 namespace Database\Factories;
 
 use App\Models\Item;
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-
-/**
- * @extends Factory<Item>
- */
 class ItemFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Item::class;
+
     public function definition(): array
     {
         return [
-            'owner_id' => 1,
-            'category_id' => rand(1, 5),
-            'title' => fake()->sentence(3),
-            'description' => fake()->paragraph(),
-            'price_per_day'=> rand(20, 500),
-            'location' => fake()->city(),
-            'status' => 'available',
+           
+            'title' => ucfirst($this->faker->words(3, true)), 
+            
+            'description' => $this->faker->paragraph(3), 
+            
+            'price_per_day' => $this->faker->randomFloat(2, 10, 300), 
+            
+            'location' => $this->faker->city(), 
+            
+            'status' => $this->faker->randomElement(['available', 'available', 'rented']), 
+            
+            'category_id' => Category::inRandomOrder()->first()->id ?? 1, 
+            
+            'owner_id' => User::inRandomOrder()->first()->id ?? 1, 
         ];
     }
 }

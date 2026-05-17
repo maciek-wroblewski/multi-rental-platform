@@ -4,42 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Category;
-use App\Models\Rental;
-use App\Models\Review;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Item extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
-        'owner_id',
-        'category_id',
         'title',
         'description',
         'price_per_day',
         'location',
+        'category_id',
+        'owner_id',
+        'status',
     ];
 
-
-    public function owner()
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
-    public function category()
+ 
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function rentals()
-    {
-        return $this->hasMany(Rental::class);
-    }
-
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
     }
 }
